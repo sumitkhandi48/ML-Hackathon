@@ -65,10 +65,19 @@ class ViterbiRouteDecoder:
     """
     Custom log-space HMM Viterbi Decoder.
     """
-    def __init__(self, trip: TripData, beta: float = 20.0, max_speed: float = 35.0):
+    def __init__(
+        self,
+        trip: TripData,
+        beta: float = 15.0,
+        max_speed: float = 35.0,
+        disconn_penalty: float = -3.5,
+        backward_tol_m: float = 15.0
+    ):
         self.trip = trip
         self.beta = beta
         self.max_speed = max_speed  # 35 m/s ≈ 126 km/h
+        self.disconn_penalty = disconn_penalty  # Calibrated transition penalty to avoid state entrapment
+        self.backward_tol_m = backward_tol_m    # Physical backward distance tolerance in meters for stationary GPS jitter
         self.router = DijkstraRouter(trip.adj)
 
     def decode(
@@ -150,10 +159,11 @@ class ViterbiRouteDecoder:
                     
                     # Network distance calculation
                     if arc_prev == arc_curr:
-                        if frac_curr >= frac_prev - 0.05:
-                            d_net = max(0.0, frac_curr - frac_prev) * len_prev
+                        delta_dist = (frac_curr - frac_prev) * len_prev
+                        if delta_dist >= -self.backward_tol_m:
+                            d_net = max(0.0, delta_dist)
                         else:
-                            # Moving backwards on directed arc
+                            # Moving backwards beyond physical GPS jitter tolerance
                             d_net = 500.0
                     elif u_node == v_node:
                         d_net = (1.0 - frac_prev) * len_prev + frac_curr * len_curr
@@ -166,7 +176,7 @@ class ViterbiRouteDecoder:
                             
                     # Transition log-likelihood
                     if d_net >= 500.0:
-                        log_trans = -80.0
+                        log_trans = self.disconn_penalty
                     else:
                         speed = d_net / dt
                         speed_penalty = max(0.0, speed - self.max_speed) * 2.0

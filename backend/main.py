@@ -149,7 +149,7 @@ def predict(req: PredictRequest):
                 cand_probs_per_obs.append(np.array([], dtype=np.float32))
             ptr += num_c
 
-        decoder = ViterbiRouteDecoder(trip, beta=20.0, max_speed=35.0)
+        decoder = ViterbiRouteDecoder(trip, beta=15.0, max_speed=35.0)
         predicted_arcs, reconstructed_route, viterbi_diag = decoder.decode(candidates, cand_probs_per_obs)
         pred_arc_list = predicted_arcs.tolist()
         route_arc_sequence = reconstructed_route

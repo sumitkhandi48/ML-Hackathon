@@ -57,23 +57,25 @@ def run_hmm_evaluation():
         clf_pred_arcs = np.full(T, -1, dtype=np.int32)
         cand_probs_per_obs = []
         
+        ptr = 0
         for t in range(T):
-            mask = obs_indices == t
-            if np.any(mask):
-                c_p = probs[mask]
-                c_a = cand_arcs[mask]
+            num_c = len(candidates[t].arc_ids)
+            if num_c > 0:
+                c_p = probs[ptr:ptr+num_c]
+                c_a = cand_arcs[ptr:ptr+num_c]
                 best_idx = np.argmax(c_p)
                 clf_pred_arcs[t] = c_a[best_idx]
                 cand_probs_per_obs.append(c_p)
             else:
                 cand_probs_per_obs.append(np.array([], dtype=np.float32))
+            ptr += num_c
                 
         clf_time = time.time() - t_clf_0
         total_clf_time += clf_time
         
         # 2. Classifier + HMM / Viterbi Decoding
         t_hmm_0 = time.time()
-        decoder = ViterbiRouteDecoder(trip, beta=20.0, max_speed=35.0)
+        decoder = ViterbiRouteDecoder(trip, beta=15.0, max_speed=35.0)
         hmm_pred_arcs, reconstructed_route, viterbi_diag = decoder.decode(candidates, cand_probs_per_obs)
         hmm_time = time.time() - t_hmm_0
         total_hmm_time += (clf_time + hmm_time)
