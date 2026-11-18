@@ -16,7 +16,7 @@ def align_reference_route(
     arc_x2: np.ndarray,
     arc_y2: np.ndarray,
     sigma_dist: float = 15.0,
-    skip_penalty: float = 2.0,
+    skip_penalty: float = 0.5,
     max_skip: int = 8
 ) -> tuple[np.ndarray, dict]:
     """
@@ -47,6 +47,12 @@ def align_reference_route(
     ref_x2 = arc_x2[reference_route]
     ref_y2 = arc_y2[reference_route]
     
+    # Compute median segment length along reference route to adaptively calibrate transition penalties
+    seg_lens = np.hypot(ref_x2 - ref_x1, ref_y2 - ref_y1)
+    median_seg_len = float(np.median(seg_lens)) if len(seg_lens) > 0 else 25.0
+    # Adapt skip penalty proportionally to physical segment length (micro-segments vs highway spans)
+    adaptive_skip_penalty = skip_penalty * min(1.0, max(0.05, median_seg_len / 50.0))
+
     # Precompute distance matrix of shape (T, L)
     # Since L is typically 100-800 and T is 500-2000, T*L is ~1M floats, easily vectorized
     dist_matrix = np.zeros((T, L), dtype=np.float32)
@@ -67,10 +73,10 @@ def align_reference_route(
     inv_2sigma2 = 1.0 / (2.0 * sigma_dist * sigma_dist)
     emission = - (dist_matrix ** 2) * inv_2sigma2
     
-    # Initialization at t = 0: allow starting at early positions in route (e.g. first min(5, L))
-    init_window = min(10, L)
+    # Initialization at t = 0: allow starting at early positions in route (e.g. first min(15, L))
+    init_window = min(15, L)
     for k in range(init_window):
-        dp[0, k] = emission[0, k] - k * 1.0
+        dp[0, k] = emission[0, k] - k * 0.5
         
     # If initial window has very poor distance, allow closest among all
     if np.max(dp[0]) < -50.0:
@@ -79,8 +85,14 @@ def align_reference_route(
         
     # DP forward pass with beam window pruning
     for t in range(1, T):
+        dx = track_x[t] - track_x[t-1]
+        dy = track_y[t] - track_y[t-1]
+        d_gps = float(np.hypot(dx, dy))
         dt = max(1.0, float(track_times[t] - track_times[t-1]))
-        effective_max_skip = max(max_skip, int(dt * 3))  # scale skip with time gap
+        
+        # Scale max skip with physical displacement and segment granularity
+        plausible_skips = int(d_gps / max(3.0, median_seg_len)) + int(dt * 3) + 8
+        effective_max_skip = max(max_skip, min(40, plausible_skips))
         
         # Candidate positions around the best previous route position (beam window)
         prev_best_k = int(np.argmax(dp[t-1]))
@@ -98,7 +110,7 @@ def align_reference_route(
             start_prev = max(min_k, k - effective_max_skip)
             cand_prev = np.arange(start_prev, k + 1)
             
-            scores = dp[t-1, cand_prev] - (k - cand_prev) * skip_penalty
+            scores = dp[t-1, cand_prev] - (k - cand_prev) * adaptive_skip_penalty
             best_idx = np.argmax(scores)
             best_score = scores[best_idx]
             
@@ -108,10 +120,9 @@ def align_reference_route(
                 
         # If all dp[t] are -inf, restart from closest position in route
         if np.max(dp[t]) <= NEG_INF / 2:
-            subset_dists = dist_matrix[t, min_k:min(L, max_k + 15)]
-            if len(subset_dists) > 0:
-                best_sub = int(np.argmin(subset_dists))
-                chosen_k = min_k + best_sub
+            subset_dists = dist_matrix[t, prev_best_k:min(L, prev_best_k + 20)]
+            if len(subset_dists) > 0 and np.min(subset_dists) <= 50.0:
+                chosen_k = prev_best_k + int(np.argmin(subset_dists))
             else:
                 chosen_k = int(np.argmin(dist_matrix[t]))
             dp[t, chosen_k] = emission[t, chosen_k]
