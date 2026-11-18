@@ -19,3 +19,9 @@ PathSnap_student_materials/
 
 # Feature Caches (can be regenerated with `python -m src.feature_cache`)
 artifacts/cache/
+
+# Scratch & temporary scripts
+scratch/
+test_*.py
+create_*_screenshot*.py
+temp_*.py
