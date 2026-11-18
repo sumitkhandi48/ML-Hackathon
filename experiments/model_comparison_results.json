@@ -1,0 +1,142 @@
+[
+  {
+    "model_name": "Gaussian Naive Bayes",
+    "algorithm_family": "Probabilistic",
+    "key_configuration": "{'var_smoothing': 1e-08}",
+    "cv_macro_f1": 0.5803006619957239,
+    "cv_top1_accuracy": 0.31343974706588845,
+    "cv_log_loss": 2.0878891514745117,
+    "cv_route_continuity": 0.6388649425697085,
+    "student_test_macro_f1": 0.540320977802624,
+    "student_test_top1_accuracy": 0.23235908141962422,
+    "student_test_precision": 0.2399176077846438,
+    "student_test_recall": 0.8855390100671141,
+    "student_test_log_loss": 2.244482200226533,
+    "student_test_route_continuity": 0.5547728171542617,
+    "student_test_lcs_f1": 0.3245404232842086,
+    "training_time_sec": 2.5079727172851562,
+    "inference_time_sec": 3.2499005794525146,
+    "confusion_matrix": [
+      [
+        65938,
+        53506
+      ],
+      [
+        2183,
+        16889
+      ]
+    ]
+  },
+  {
+    "model_name": "Logistic Regression",
+    "algorithm_family": "Linear",
+    "key_configuration": "{'C': 1.0, 'max_iter': 500, 'solver': 'lbfgs', 'random_state': 42}",
+    "cv_macro_f1": 0.8171101715629948,
+    "cv_top1_accuracy": 0.7435057535489085,
+    "cv_log_loss": 0.23904195149007357,
+    "cv_route_continuity": 0.8775498207909144,
+    "student_test_macro_f1": 0.8631720623473934,
+    "student_test_top1_accuracy": 0.8287056367432151,
+    "student_test_precision": 0.7165634110787172,
+    "student_test_recall": 0.8247692953020134,
+    "student_test_log_loss": 0.21095698838051644,
+    "student_test_route_continuity": 0.9088122293799209,
+    "student_test_lcs_f1": 0.7113410549505745,
+    "training_time_sec": 6.127550840377808,
+    "inference_time_sec": 1.2393708229064941,
+    "confusion_matrix": [
+      [
+        113222,
+        6222
+      ],
+      [
+        3342,
+        15730
+      ]
+    ]
+  },
+  {
+    "model_name": "Decision Tree",
+    "algorithm_family": "Tree-based",
+    "key_configuration": "{'max_depth': 10, 'min_samples_split': 20, 'min_samples_leaf': 10, 'random_state': 42}",
+    "cv_macro_f1": 0.3555186763963382,
+    "cv_top1_accuracy": 0.05050874857277402,
+    "cv_log_loss": 9.771405019905787,
+    "cv_route_continuity": 0.563834641222578,
+    "student_test_macro_f1": 0.36750962915410784,
+    "student_test_top1_accuracy": 0.10146137787056367,
+    "student_test_precision": 0.16863012750131062,
+    "student_test_recall": 0.8938758389261745,
+    "student_test_log_loss": 9.57554867235107,
+    "student_test_route_continuity": 0.5743933727242829,
+    "student_test_lcs_f1": 0.29764819736011916,
+    "training_time_sec": 62.58685111999512,
+    "inference_time_sec": 1.413480520248413,
+    "confusion_matrix": [
+      [
+        35395,
+        84049
+      ],
+      [
+        2024,
+        17048
+      ]
+    ]
+  },
+  {
+    "model_name": "Extra Trees",
+    "algorithm_family": "Ensemble",
+    "key_configuration": "{'n_estimators': 50, 'max_depth': 12, 'min_samples_split': 15, 'min_samples_leaf': 5, 'max_features': 'sqrt', 'n_jobs': -1, 'random_state': 42}",
+    "cv_macro_f1": 0.428254353835331,
+    "cv_top1_accuracy": 0.43441935134360804,
+    "cv_log_loss": 0.8155332384957749,
+    "cv_route_continuity": 0.5476714744787811,
+    "student_test_macro_f1": 0.4311472099015708,
+    "student_test_top1_accuracy": 0.4076722338204593,
+    "student_test_precision": 0.1854541769415262,
+    "student_test_recall": 0.8635696308724832,
+    "student_test_log_loss": 0.8350936071288483,
+    "student_test_route_continuity": 0.5181718087255832,
+    "student_test_lcs_f1": 0.32022490119531494,
+    "training_time_sec": 13.225310802459717,
+    "inference_time_sec": 0.9448971748352051,
+    "confusion_matrix": [
+      [
+        47105,
+        72339
+      ],
+      [
+        2602,
+        16470
+      ]
+    ]
+  },
+  {
+    "model_name": "HistGradientBoosting",
+    "algorithm_family": "Boosting",
+    "key_configuration": "{'max_iter': 80, 'max_depth': 8, 'min_samples_leaf': 20, 'learning_rate': 0.1, 'random_state': 42}",
+    "cv_macro_f1": 0.356477509196776,
+    "cv_top1_accuracy": 0.05437189081199051,
+    "cv_log_loss": 3.6115356844194557,
+    "cv_route_continuity": 0.561142624938262,
+    "student_test_macro_f1": 0.3680836417426939,
+    "student_test_top1_accuracy": 0.09900835073068893,
+    "student_test_precision": 0.16888682158267684,
+    "student_test_recall": 0.8947671979865772,
+    "student_test_log_loss": 3.708079526025166,
+    "student_test_route_continuity": 0.5713204357894797,
+    "student_test_lcs_f1": 0.35745721421037285,
+    "training_time_sec": 9.11076021194458,
+    "inference_time_sec": 0.8769307136535645,
+    "confusion_matrix": [
+      [
+        35465,
+        83979
+      ],
+      [
+        2007,
+        17065
+      ]
+    ]
+  }
+]

@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -10,3 +11,11 @@ htmlcov/
 env/
 venv/
 *.sqlite3-journal
+
+# Large Raw Datasets & Zips
+Student folder/
+PathSnap_student_materials/
+*.zip
+
+# Feature Caches (can be regenerated with `python -m src.feature_cache`)
+artifacts/cache/

@@ -1,0 +1,9 @@
+{
+  "best_model_name": "Logistic Regression",
+  "selection_metric": "cv_top1_accuracy",
+  "cv_top1_accuracy": 0.7435057535489085,
+  "student_test_top1_accuracy": 0.8287056367432151,
+  "cv_macro_f1": 0.8171101715629948,
+  "student_test_macro_f1": 0.8631720623473934,
+  "selection_rationale": "Selected Logistic Regression because it achieved the highest grouped-CV observation-level Top-1 accuracy (0.7435) and superior student-testing Top-1 accuracy (0.8287) with balanced inference efficiency."
+}

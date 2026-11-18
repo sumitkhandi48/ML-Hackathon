@@ -1,0 +1,27 @@
+{
+  "model_name": "Logistic Regression",
+  "n_trials": 8,
+  "best_trial_number": 11,
+  "best_hyperparameters": {
+    "C": 0.010360706092502739,
+    "max_iter": 388
+  },
+  "untuned": {
+    "cv_top1_accuracy": 0.7435057535489085,
+    "cv_macro_f1": 0.8171101715629948,
+    "student_test_top1_accuracy": 0.8287056367432151,
+    "student_test_macro_f1": 0.8631720623473934,
+    "student_test_log_loss": 0.21095698838051644,
+    "student_test_route_continuity": 0.9088122293799209,
+    "inference_time_sec": 1.2393708229064941
+  },
+  "tuned": {
+    "cv_top1_accuracy": 0.648126983861954,
+    "cv_macro_f1": 0.8171101715629948,
+    "student_test_top1_accuracy": 0.8287578288100209,
+    "student_test_macro_f1": 0.8631956957834547,
+    "student_test_log_loss": 0.21109613349022607,
+    "student_test_route_continuity": 0.9087448893125808,
+    "inference_time_sec": 0.4171004295349121
+  }
+}

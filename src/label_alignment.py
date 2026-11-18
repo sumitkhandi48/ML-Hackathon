@@ -77,25 +77,25 @@ def align_reference_route(
         best_k = int(np.argmin(dist_matrix[0]))
         dp[0, best_k] = emission[0, best_k]
         
-    # DP forward pass
+    # DP forward pass with beam window pruning
     for t in range(1, T):
         dt = max(1.0, float(track_times[t] - track_times[t-1]))
         effective_max_skip = max(max_skip, int(dt * 3))  # scale skip with time gap
         
-        # Candidate positions k that were reachable at t-1
-        prev_valid_k = np.where(dp[t-1] > NEG_INF / 2)[0]
-        if len(prev_valid_k) == 0:
+        # Candidate positions around the best previous route position (beam window)
+        prev_best_k = int(np.argmax(dp[t-1]))
+        if dp[t-1, prev_best_k] <= NEG_INF / 2:
             # Fallback if path broke
             best_k = int(np.argmin(dist_matrix[t]))
             dp[t, best_k] = emission[t, best_k]
             continue
             
-        min_k = prev_valid_k[0]
-        max_k = min(L - 1, prev_valid_k[-1] + effective_max_skip)
+        min_k = max(0, prev_best_k - 2)
+        max_k = min(L - 1, prev_best_k + effective_max_skip + 3)
         
         for k in range(min_k, max_k + 1):
-            # Possible predecessors k_prev <= k
-            start_prev = max(0, k - effective_max_skip)
+            # Possible predecessors k_prev <= k within beam
+            start_prev = max(min_k, k - effective_max_skip)
             cand_prev = np.arange(start_prev, k + 1)
             
             scores = dp[t-1, cand_prev] - (k - cand_prev) * skip_penalty
@@ -106,16 +106,16 @@ def align_reference_route(
                 dp[t, k] = emission[t, k] + best_score
                 backpointer[t, k] = cand_prev[best_idx]
                 
-        # If all dp[t] are -inf, restart from closest position >= min_k
+        # If all dp[t] are -inf, restart from closest position in route
         if np.max(dp[t]) <= NEG_INF / 2:
-            subset_dists = dist_matrix[t, min_k:]
+            subset_dists = dist_matrix[t, min_k:min(L, max_k + 15)]
             if len(subset_dists) > 0:
                 best_sub = int(np.argmin(subset_dists))
                 chosen_k = min_k + best_sub
             else:
                 chosen_k = int(np.argmin(dist_matrix[t]))
             dp[t, chosen_k] = emission[t, chosen_k]
-            backpointer[t, chosen_k] = min_k
+            backpointer[t, chosen_k] = prev_best_k
 
     # Backtracking
     aligned_positions = np.zeros(T, dtype=np.int32)
