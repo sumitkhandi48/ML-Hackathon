@@ -1,0 +1,30 @@
+{
+  "train": {
+    "total_trips": 80,
+    "total_gps_points": 208417,
+    "mean_gps_points_per_trip": 2605.2125,
+    "median_gps_points_per_trip": 1529.0,
+    "min_gps_points_per_trip": 361,
+    "max_gps_points_per_trip": 19313,
+    "mean_nodes": 24168.5625,
+    "mean_arcs": 48461.3,
+    "total_missing_values": 0,
+    "mean_time_gap_1s_pct": 93.83585654861596,
+    "max_time_gap_across_all": 153064.0,
+    "mean_isolated_nodes": 0.0
+  },
+  "student_test": {
+    "total_trips": 10,
+    "total_gps_points": 19160,
+    "mean_gps_points_per_trip": 1916.0,
+    "median_gps_points_per_trip": 1420.0,
+    "min_gps_points_per_trip": 262,
+    "max_gps_points_per_trip": 3958,
+    "mean_nodes": 9068.9,
+    "mean_arcs": 18504.1,
+    "total_missing_values": 0,
+    "mean_time_gap_1s_pct": 98.19896936551982,
+    "max_time_gap_across_all": 210.0,
+    "mean_isolated_nodes": 0.0
+  }
+}
