@@ -1,0 +1,7 @@
+Metric,Untuned (C=1.0),Tuned (C=0.01036),Change / Impact
+CV Macro F1 (%),81.71,81.71,Preserved
+Student-Test Top-1 Acc (%),82.87,82.88,+0.01% (Stable)
+Student-Test Macro F1 (%),86.32,86.32,Preserved
+Route Continuity (%),90.88,90.87,Preserved
+Student-Test Log Loss,0.211,0.2111,Well-calibrated
+Inference Latency (s),1.239,0.417,66.3% faster (3x speedup)

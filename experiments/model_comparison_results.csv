@@ -1,0 +1,6 @@
+Model Name,Algorithm Family,Key Configuration,CV Macro F1 (%),CV Top-1 Acc (%),Student-Test Top-1 Acc (%),Route Continuity (%),Student-Test Macro F1 (%),Log Loss,Precision (%),Recall (%),Sequence LCS F1 (%),Inference Time (s)
+Gaussian Naive Bayes,Probabilistic,{'var_smoothing': 1e-08},58.03,31.34,23.24,55.48,54.03,2.2445,23.99,88.55,32.45,3.25
+Logistic Regression,Linear,"{'C': 1.0, 'max_iter': 500, 'solver': 'lbfgs', 'random_state': 42}",81.71,74.35,82.87,90.88,86.32,0.211,71.66,82.48,71.13,1.239
+Decision Tree,Tree-based,"{'max_depth': 10, 'min_samples_split': 20, 'min_samples_leaf': 10, 'random_state': 42}",35.55,5.05,10.15,57.44,36.75,9.5755,16.86,89.39,29.76,1.413
+Extra Trees,Ensemble,"{'n_estimators': 50, 'max_depth': 12, 'min_samples_split': 15, 'min_samples_leaf': 5, 'max_features': 'sqrt', 'n_jobs': -1, 'random_state': 42}",42.83,43.44,40.77,51.82,43.11,0.8351,18.55,86.36,32.02,0.945
+HistGradientBoosting,Boosting,"{'max_iter': 80, 'max_depth': 8, 'min_samples_leaf': 20, 'learning_rate': 0.1, 'random_state': 42}",35.65,5.44,9.9,57.13,36.81,3.7081,16.89,89.48,35.75,0.877
