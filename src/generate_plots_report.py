@@ -387,12 +387,28 @@ def build_consolidated_pdf_report():
 
     story.append(Spacer(1, 8))
 
+    story.append(PageBreak())
+
     # SECTION 7: API, UI AND DEPLOYMENT
     story.append(Paragraph("7. API, UI and Deployment", h1_style))
     story.append(Paragraph("<b>Distributed Deployment Architecture:</b>", body_style))
     story.append(Paragraph("• <b>Laptop 1 (Backend Server):</b> Hosts the trained classifier, candidate generator, Dijkstra graph router, log-space Viterbi HMM decoder, and isolated server-side evaluation service. Started via <font name='Courier'>python -m uvicorn backend.main:app --host 0.0.0.0 --port 8000</font>.", body_style))
     story.append(Paragraph("• <b>Laptop 2 (Evaluator Client):</b> Connects over LAN IP, queries <font name='Courier'>GET /trips</font> for dynamic trip discovery, dispatches <font name='Courier'>POST /predict</font>, and renders the Leaflet interactive map with aggregate accuracy metrics and track gap warnings.", body_style))
     story.append(Paragraph("• <b>Ground-Truth Isolation:</b> Ground-truth reference routes and per-point labels are strictly confined to the server-side EvaluatorService and never returned to the UI client.", body_style))
+    story.append(Spacer(1, 6))
+
+    ui_fig = REPORT_DIR / "ui_dashboard_screenshot.png"
+    if ui_fig.exists():
+        story.append(Paragraph("<b>7.1 Screenshot of Working UI (Laptop 2 Client Dashboard):</b>", h2_style))
+        story.append(Image(str(ui_fig), width=510, height=265))
+        story.append(Paragraph("<i>Figure 7: Live Leaflet dashboard on Laptop 2 — displays Trip 00000007 inference (96.38% Top-1 accuracy, 99.41% continuity, 91.6% LCS F1, 297ms latency, GPS points, predicted route, and real-time terminal log feed).</i>", table_cell))
+        story.append(Spacer(1, 8))
+
+    cmd_fig = REPORT_DIR / "api_cmd_screenshot.png"
+    if cmd_fig.exists():
+        story.append(Paragraph("<b>7.2 Screenshot of Successful API Responses on CMD (Laptop 1 Receiving Server):</b>", h2_style))
+        story.append(Image(str(cmd_fig), width=510, height=190))
+        story.append(Paragraph("<i>Figure 8: Real terminal CMD output on Laptop 1 — confirms uvicorn launch on 0.0.0.0:8000, model loading, GET /health, GET /trips discovery, and successful POST /predict execution with server-side evaluation metrics.</i>", table_cell))
 
     doc.build(story)
     print(f"Successfully generated consolidated technical report: {pdf_path}")
