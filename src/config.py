@@ -11,6 +11,11 @@ STUDENT_DATA_DIR = BASE_DIR / "Student folder" / "Student folder"
 TRAIN_DIR = STUDENT_DATA_DIR / "train"
 TEST_DIR = STUDENT_DATA_DIR / "student_test"
 
+# Evaluator Test Set
+EVALUATOR_TEST_DIR = BASE_DIR / "evaluator_test" / "evaluator_test"
+if not EVALUATOR_TEST_DIR.exists():
+    EVALUATOR_TEST_DIR = BASE_DIR / "evaluator_test"
+
 ARTIFACTS_DIR = BASE_DIR / "artifacts"
 EDA_DIR = BASE_DIR / "eda"
 EXPERIMENTS_DIR = BASE_DIR / "experiments"

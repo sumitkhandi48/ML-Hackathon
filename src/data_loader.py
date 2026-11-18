@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Optional
 import numpy as np
 
-from src.config import TRAIN_DIR, TEST_DIR
+from src.config import TRAIN_DIR, TEST_DIR, EVALUATOR_TEST_DIR
 from src.geo_utils import LocalProjector, SpatialIndex, calculate_heading
 
 class TripData:
@@ -110,15 +110,37 @@ class TripData:
             self.adj[u].append((v, arc_id, length))
 
 
+def _get_partition_dir(partition: str) -> Path:
+    if partition == "train":
+        return TRAIN_DIR
+    elif partition in ("evaluator_test", "evaluator"):
+        return EVALUATOR_TEST_DIR if EVALUATOR_TEST_DIR.exists() else TEST_DIR
+    elif partition in ("student_test", "test"):
+        return TEST_DIR
+    else:
+        # Check if folder exists directly under base or student data dir
+        from src.config import BASE_DIR, STUDENT_DATA_DIR
+        for candidate in [BASE_DIR / partition, STUDENT_DATA_DIR / partition]:
+            if candidate.exists():
+                return candidate
+        return TEST_DIR
+
+
 def list_trips(partition: str = "train") -> list[str]:
-    """List trip IDs in train or student_test partition."""
-    p = TRAIN_DIR if partition == "train" else TEST_DIR
+    """List trip IDs in train, student_test, or evaluator_test partition."""
+    p = _get_partition_dir(partition)
     trip_dirs = sorted([d.name for d in p.iterdir() if d.is_dir()])
     return trip_dirs
 
 
 def load_trip(trip_id: str, partition: str = "train") -> TripData:
     """Load a specific trip by ID."""
-    p = TRAIN_DIR if partition == "train" else TEST_DIR
+    p = _get_partition_dir(partition)
     trip_dir = p / trip_id
+    if not trip_dir.exists():
+        # Fallback check across all partitions
+        for alt in [EVALUATOR_TEST_DIR, TEST_DIR, TRAIN_DIR]:
+            if (alt / trip_id).exists():
+                trip_dir = alt / trip_id
+                break
     return TripData(trip_id, trip_dir)

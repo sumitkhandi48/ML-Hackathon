@@ -53,7 +53,7 @@ def get_model():
 
 class PredictRequest(BaseModel):
     trip_id: str
-    partition: Optional[str] = "student_test"
+    partition: Optional[str] = "evaluator_test"
     use_hmm: Optional[bool] = True
 
 
@@ -71,15 +71,12 @@ def health():
 
 
 @app.get("/trips")
-def get_available_trips(partition: str = "student_test"):
+def get_available_trips(partition: str = "evaluator_test"):
     """
     Dynamically discover trip IDs in the target partition.
     Does not hardcode or access unsupplied data.
     """
-    p = STUDENT_DATA_DIR / partition
-    if not p.exists():
-        p = TEST_DIR
-    trips = sorted([d.name for d in p.iterdir() if d.is_dir()])
+    trips = list_trips(partition)
     return {
         "partition": partition,
         "count": len(trips),

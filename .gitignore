@@ -15,6 +15,7 @@ venv/
 # Large Raw Datasets & Zips
 Student folder/
 PathSnap_student_materials/
+evaluator_test/
 *.zip
 
 # Feature Caches (can be regenerated with `python -m src.feature_cache`)

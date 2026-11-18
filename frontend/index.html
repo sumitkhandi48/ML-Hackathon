@@ -45,7 +45,16 @@
           </div>
 
           <div class="form-group">
-            <label for="tripSelect">Select Evaluator Trip</label>
+            <label for="partitionSelect">Dataset Partition</label>
+            <select id="partitionSelect" class="select-input">
+              <option value="evaluator_test" selected>Official Evaluator Test (10 trips)</option>
+              <option value="student_test">Student Test (10 trips)</option>
+              <option value="train">Training Set (80 trips)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="tripSelect">Select Trip</label>
             <select id="tripSelect" class="select-input">
               <option value="" disabled selected>Loading available trips...</option>
             </select>

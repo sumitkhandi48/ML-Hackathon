@@ -16,6 +16,7 @@ let currentBounds = null;
 // DOM Elements
 const serverUrlInput = document.getElementById("serverUrl");
 const connectBtn = document.getElementById("connectBtn");
+const partitionSelect = document.getElementById("partitionSelect");
 const tripSelect = document.getElementById("tripSelect");
 const runBtn = document.getElementById("runBtn");
 const useHmmToggle = document.getElementById("useHmmToggle");
@@ -116,21 +117,7 @@ async function checkHealthAndLoadTrips() {
     logTerminal(`Backend online. Device: ${healthData.device}. Model loaded: ${healthData.model_loaded}`, "success");
 
     // Fetch Trips
-    logTerminal(`Fetching available test trips...`, "info");
-    const tripsRes = await fetch(`${baseUrl}/trips?partition=student_test`);
-    if (!tripsRes.ok) throw new Error(`HTTP ${tripsRes.status}`);
-    const tripsData = await tripsRes.json();
-
-    tripSelect.innerHTML = "";
-    tripsData.trips.forEach((tid, idx) => {
-      const opt = document.createElement("option");
-      opt.value = tid;
-      opt.textContent = `Trip ${tid} (Test #${idx + 1})`;
-      tripSelect.appendChild(opt);
-    });
-
-    runBtn.disabled = false;
-    logTerminal(`Discovered ${tripsData.count} evaluator trips in partition '${tripsData.partition}'.`, "success");
+    await loadTripsOnly();
   } catch (err) {
     connectionStatus.querySelector(".status-indicator").className = "status-indicator offline";
     connectionText.textContent = "Offline / Error";
@@ -139,7 +126,35 @@ async function checkHealthAndLoadTrips() {
   }
 }
 
+async function loadTripsOnly() {
+  const baseUrl = getBaseUrl();
+  const partition = partitionSelect ? partitionSelect.value : "evaluator_test";
+  logTerminal(`Fetching available trips from partition '${partition}'...`, "info");
+  
+  try {
+    const tripsRes = await fetch(`${baseUrl}/trips?partition=${partition}`);
+    if (!tripsRes.ok) throw new Error(`HTTP ${tripsRes.status}`);
+    const tripsData = await tripsRes.json();
+
+    tripSelect.innerHTML = "";
+    tripsData.trips.forEach((tid, idx) => {
+      const opt = document.createElement("option");
+      opt.value = tid;
+      opt.textContent = `Trip ${tid} (#${idx + 1})`;
+      tripSelect.appendChild(opt);
+    });
+
+    runBtn.disabled = tripsData.trips.length === 0;
+    logTerminal(`Discovered ${tripsData.count} trips in '${tripsData.partition}'.`, "success");
+  } catch (err) {
+    logTerminal(`Failed to load trips for ${partition}: ${err.message}`, "error");
+  }
+}
+
 connectBtn.addEventListener("click", checkHealthAndLoadTrips);
+if (partitionSelect) {
+  partitionSelect.addEventListener("change", loadTripsOnly);
+}
 
 function clearMap() {
   gpsLayerGroup.clearLayers();
@@ -155,11 +170,12 @@ async function runPrediction() {
   if (!tripId) return;
 
   const baseUrl = getBaseUrl();
+  const partition = partitionSelect ? partitionSelect.value : "evaluator_test";
   const useHmm = useHmmToggle.checked;
 
   runBtn.disabled = true;
   document.getElementById("btnText").textContent = "Processing...";
-  logTerminal(`Dispatching POST /predict for trip ${tripId} (HMM=${useHmm})...`, "info");
+  logTerminal(`Dispatching POST /predict for trip ${tripId} (partition=${partition}, HMM=${useHmm})...`, "info");
 
   try {
     const res = await fetch(`${baseUrl}/predict`, {
@@ -167,7 +183,7 @@ async function runPrediction() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         trip_id: tripId,
-        partition: "student_test",
+        partition: partition,
         use_hmm: useHmm
       })
     });
